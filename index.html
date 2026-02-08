@@ -8,10 +8,12 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
        (function(){
-          // ВСТАВЬ СВОЙ PUBLIC KEY ТУТ
           emailjs.init("vOYpJ9iTUaeceV_6k");
        })();
     </script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
     <style>
         :root {
@@ -143,11 +145,6 @@
             box-shadow: 0 0 20px rgba(163, 73, 245, 0.2);
         }
 
-        .nav-link.highlight {
-            border-color: rgba(255, 255, 255, 0.3);
-            color: #fff;
-        }
-
         .main-content {
             flex: 1;
             display: flex;
@@ -208,23 +205,39 @@
             font-weight: 800;
             cursor: pointer;
             text-transform: uppercase;
-            transition: 0.4s;
+            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             margin-top: 20px;
         }
 
-        .buy-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(163, 73, 245, 0.3);
+            filter: brightness(1.1);
+        }
 
-        .modal, .auth-modal {
+        .buy-btn:active {
+            transform: scale(0.97);
+        }
+
+        .auth-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.96);
-            justify-content: center; align-items: center; z-index: 2000;
-            backdrop-filter: blur(20px);
-            transition: opacity 0.3s ease;
+            background: rgba(0,0,0,0);
+            justify-content: center; 
+            align-items: center; 
+            z-index: 2000;
+            transition: background 0.5s ease;
+            backdrop-filter: blur(0px);
         }
 
-        .modal-content, .auth-content {
+        .auth-modal.active {
+            display: flex;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(15px);
+        }
+
+        .auth-content {
             background: #0a0c10;
             padding: 45px;
             border-radius: 35px;
@@ -233,44 +246,16 @@
             width: 90%;
             text-align: center;
             box-shadow: 0 0 60px rgba(163, 73, 245, 0.15);
-            animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
         }
 
-        @keyframes modalFadeIn {
+        .auth-modal.active .auth-content {
+            animation: celestialFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes celestialFadeIn {
             from { opacity: 0; transform: scale(0.95) translateY(10px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        #finalPriceText {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin: 15px 0 30px;
-            background: linear-gradient(to bottom, #fff, var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .pay-option {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-decoration: none;
-            background: rgba(255,255,255,0.03);
-            color: white;
-            padding: 22px;
-            margin-bottom: 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .pay-option:hover {
-            background: rgba(163, 73, 245, 0.1);
-            border-color: var(--accent);
-            transform: scale(1.02);
         }
 
         .auth-input {
@@ -304,12 +289,11 @@
             border: 1px solid rgba(163, 73, 245, 0.1); 
             text-align: center; 
             backdrop-filter: blur(5px);
-            transition: 0.3s ease;
+            transition: 0.3s;
         }
 
         .feature-item:hover {
             border-color: var(--accent);
-            transform: translateY(-5px);
             background: rgba(163, 73, 245, 0.05);
         }
 
@@ -350,19 +334,19 @@
 
             <div class="plan-list">
                 <div class="plan-item selected" onclick="selectPlan(this, '0.29')">
-                    <span class="plan-name">1 Day Access</span> <span class="plan-price">$0.29</span>
+                    <span class="plan-name" id="p1-name">1 Day Access</span> <span class="plan-price">$0.29</span>
                 </div>
                 <div class="plan-item" onclick="selectPlan(this, '0.50')">
-                    <span class="plan-name">3 Days Access</span> <span class="plan-price">$0.50</span>
+                    <span class="plan-name" id="p2-name">3 Days Access</span> <span class="plan-price">$0.50</span>
                 </div>
                 <div class="plan-item" onclick="selectPlan(this, '1.20')">
-                    <span class="plan-name">7 Days Access</span> <span class="plan-price">$1.20</span>
+                    <span class="plan-name" id="p3-name">7 Days Access</span> <span class="plan-price">$1.20</span>
                 </div>
                 <div class="plan-item" onclick="selectPlan(this, '3.99')">
-                    <span class="plan-name">30 Days Access</span> <span class="plan-price">$3.99</span>
+                    <span class="plan-name" id="p4-name">30 Days Access</span> <span class="plan-price">$3.99</span>
                 </div>
                 <div class="plan-item" onclick="selectPlan(this, '9.90')">
-                    <span class="plan-name">Lifetime Access</span> <span class="plan-price">$9.90</span>
+                    <span class="plan-name" id="p5-name">Lifetime Access</span> <span class="plan-price">$9.90</span>
                 </div>
             </div>
 
@@ -389,34 +373,23 @@
     </div>
 </div>
 
-<div id="paymentModal" class="modal">
-    <div class="modal-content">
-        <div id="pay-secure-txt" style="text-transform: uppercase; letter-spacing: 3px; font-size: 0.65rem; color: var(--secondary); margin-bottom: 10px;">Secure Transaction</div>
-        <h2 id="pay-title" style="margin: 0; font-size: 1.5rem;">Checkout</h2>
-        <div id="finalPriceText">$0.29</div>
-        
-        <a href="https://yourstore.sellix.io/" target="_blank" class="pay-option" onclick="sendOrderConfirmation()">
-            <span class="pay-method-crypto">Pay with Crypto</span>
-            <span style="color: var(--accent); font-size: 1.2rem;">₿</span>
-        </a>
-        
-        <button id="pay-cancel" onclick="closeModal()" style="background:none; color:var(--secondary); border:none; cursor:pointer; margin-top:25px; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6;">Cancel Order</button>
+<div id="paymentModal" class="auth-modal">
+    <div class="auth-content">
+        <h2 id="pay-title">Checkout</h2>
+        <div id="finalPriceText" style="font-size: 2rem; color: var(--accent); margin: 20px 0;">$0.29</div>
+        <a href="https://yourstore.sellix.io/" target="_blank" class="buy-btn" id="pay-crypto-btn" style="text-decoration:none; display:block;" onclick="sendOrderConfirmation()">Pay with Crypto</a>
+        <button onclick="closeModal()" id="pay-cancel" style="background:none; border:none; color:gray; cursor:pointer; margin-top:15px;">Cancel</button>
     </div>
 </div>
 
 <div id="authModal" class="auth-modal">
     <div class="auth-content">
         <h2 id="auth-title" style="letter-spacing: 5px; text-transform: uppercase; margin-top:0;">Account</h2>
-        <p id="auth-sub" style="color: var(--secondary); font-size: 0.8rem; margin-bottom: 25px;">You must be logged in to purchase.</p>
+        <p id="auth-sub" style="color: var(--secondary); font-size: 0.8rem; margin-bottom: 25px;">Login to access your cabinet.</p>
         
         <div id="auth-form-fields">
             <input type="email" id="uEmail" class="auth-input" placeholder="Email Address">
             <input type="password" id="uPass" class="auth-input" placeholder="Password (min. 6 chars)">
-        </div>
-
-        <div id="verify-section" style="display: none;">
-            <p id="verify-msg" style="color: var(--accent); font-size: 0.7rem; margin-bottom: 15px;">Check your email for the verification code.</p>
-            <input type="text" id="uCode" class="auth-input" placeholder="Enter 6-digit Code" maxlength="6">
         </div>
 
         <button class="buy-btn" id="auth-btn" style="padding: 16px; font-size: 0.9rem;" onclick="handleAuth()">Login / Create Profile</button>
@@ -425,72 +398,150 @@
 </div>
 
 <script>
-    const SERVICE_ID = "service_f5n6cj9";
-    const OTP_TEMPLATE_ID = "template_apd6nsx";
-    const ORDER_TEMPLATE_ID = "template_xjbc33m";
-
-    let currentPrice = "0.29";
-    let isLoggedIn = false;
-    let isVerifying = false;
-    let generatedCode = null;
-
-    // Переводы остаются без изменений
+    // --- ПЕРЕВОДЫ ---
     const translations = {
         en: {
-            nav_acc: "account", nav_dl: "download external", status: "● UNDETECTED",
-            prod_t: "Celestial Tool", prod_d: "Premium security & performance solution.",
+            navAcc: "account",
+            navDl: "download external",
+            status: "● UNDETECTED",
+            prodTitle: "Celestial Tool",
+            prodDesc: "Premium security & performance solution.",
             plans: ["1 Day Access", "3 Days Access", "7 Days Access", "30 Days Access", "Lifetime Access"],
-            buy_btn: "Purchase Now", feat_t: ["BYPASS", "OPTIMIZED", "STREAM PROOF"],
-            feat_d: ["Kernel-level protection.", "Zero FPS impact.", "Hidden on OBS/Discord."],
-            pay_sec: "Secure Transaction", pay_t: "Checkout", pay_crypto: "Pay with Crypto",
-            pay_card: "Credit Card / Apple", pay_cancel: "Cancel Order", auth_t: "Account",
-            auth_sub: "You must be logged in to purchase.", auth_btn: "Login / Create Profile",
-            auth_verify: "Verify & Login", auth_close: "CLOSE", alert_welcome: "Welcome, ",
-            alert_now: "! Now you can complete your purchase.", alert_error_fields: "Enter valid email and password.",
-            alert_invalid_code: "Invalid verification code!", alert_invalid_email: "Enter a valid email address."
+            buyBtn: "Purchase Now",
+            featT: ["BYPASS", "OPTIMIZED", "STREAM PROOF"],
+            featD: ["Kernel-level protection.", "Zero FPS impact.", "Hidden on OBS/Discord."],
+            authTitle: "Account",
+            authSub: "Login to access your cabinet.",
+            authBtn: "Login / Create Profile",
+            payTitle: "Checkout",
+            payCrypto: "Pay with Crypto",
+            payCancel: "Cancel"
         },
         ru: {
-            nav_acc: "аккаунт", nav_dl: "скачать софт", status: "● НЕ ОБНАРУЖЕНО",
-            prod_t: "Инструмент Celestial", prod_d: "Премиальное решение для защиты и скорости.",
+            navAcc: "аккаунт",
+            navDl: "скачать софт",
+            status: "● НЕ ОБНАРУЖЕНО",
+            prodTitle: "Celestial Tool",
+            prodDesc: "Премиальное решение для защиты и производительности.",
             plans: ["Доступ на 1 день", "Доступ на 3 дня", "Доступ на 7 дней", "Доступ на 30 дней", "Навсегда"],
-            buy_btn: "Купить сейчас", feat_t: ["ОБХОД", "ОПТИМИЗАЦИЯ", "ДЛЯ СТРИМОВ"],
-            feat_d: ["Защита на уровне ядра.", "Без влияния на FPS.", "Скрыт в OBS/Discord."],
-            pay_sec: "Безопасная транзакция", pay_t: "Оплата", pay_crypto: "Оплата Криптовалютой",
-            pay_card: "Карта / Apple Pay", pay_cancel: "Отменить заказ", auth_t: "Аккаунт",
-            auth_sub: "Войдите, чтобы совершить покупку.", auth_btn: "Войти / Регистрация",
-            auth_verify: "Подтвердить и войти", auth_close: "ЗАКРЫТЬ", alert_welcome: "Добро пожаловать, ",
-            alert_now: "! Теперь вы можете завершить покупку.", alert_error_fields: "Введите email и пароль (мин. 6 симв.).",
-            alert_invalid_code: "Неверный код подтверждения!", alert_invalid_email: "Некорректный адрес почты."
+            buyBtn: "Купить сейчас",
+            featT: ["ОБХОД", "ОПТИМИЗАЦИЯ", "INVISIBLE"],
+            featD: ["Защита на уровне ядра.", "Ноль влияния на FPS.", "Скрыт в OBS/Discord."],
+            authTitle: "Аккаунт",
+            authSub: "Войдите, чтобы войти в кабинет.",
+            authBtn: "Войти / Создать профиль",
+            payTitle: "Оплата",
+            payCrypto: "Оплатить Криптой",
+            payCancel: "Отмена"
         }
     };
 
-    function setLang(lang, btn) {
-        if (btn) {
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-        localStorage.setItem('selectedLang', lang);
+    const firebaseConfig = {
+        apiKey: "AIzaSyButCWdz_eIbTBQ0UejHQcaf2FJdpI3dXc",
+        authDomain: "ccel-5e623.firebaseapp.com",
+        projectId: "ccel-5e623",
+        storageBucket: "ccel-5e623.firebasestorage.app",
+        messagingSenderId: "1005277147647",
+        appId: "1:1005277147647:web:0bc4dca22c71230a3337ca",
+        measurementId: "G-JRMSFP5EPX"
+    };
 
-        document.getElementById('nav-acc').innerText = translations[lang].nav_acc;
-        document.getElementById('nav-dl').innerText = translations[lang].nav_dl;
-        document.getElementById('status-badge').innerText = translations[lang].status;
-        document.getElementById('prod-title').innerText = translations[lang].prod_t;
-        document.getElementById('prod-desc').innerText = translations[lang].prod_d;
-        document.getElementById('buy-btn').innerText = translations[lang].buy_btn;
-        document.querySelectorAll('.plan-name').forEach((el, i) => el.innerText = translations[lang].plans[i]);
-        document.querySelectorAll('.feat-t').forEach((el, i) => el.innerText = translations[lang].feat_t[i]);
-        document.querySelectorAll('.feat-d').forEach((el, i) => el.innerText = translations[lang].feat_d[i]);
-        document.getElementById('pay-secure-txt').innerText = translations[lang].pay_sec;
-        document.getElementById('pay-title').innerText = translations[lang].pay_t;
-        document.querySelector('.pay-method-crypto').innerText = translations[lang].pay_crypto;
-        document.getElementById('pay-cancel').innerText = translations[lang].pay_cancel;
-        document.getElementById('auth-title').innerText = translations[lang].auth_t;
-        document.getElementById('auth-sub').innerText = translations[lang].auth_sub;
-        document.getElementById('auth-btn').innerText = isVerifying ? translations[lang].auth_verify : translations[lang].auth_btn;
-        document.getElementById('auth-close').innerText = translations[lang].auth_close;
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const SERVICE_ID = "service_f5n6cj9";
+    const ORDER_TEMPLATE_ID = "template_xjbc33m";
+
+    let currentPrice = "0.29";
+
+    auth.onAuthStateChanged((user) => {
+        if (user) showDashboard(user);
+        else resetToLogin();
+    });
+
+    async function handleAuth() {
+        const email = document.getElementById('uEmail').value.trim();
+        const pass = document.getElementById('uPass').value;
+        const authBtn = document.getElementById('auth-btn');
+
+        if (!email || pass.length < 6) {
+            alert("Enter valid email and password (min 6 chars)");
+            return;
+        }
+
+        authBtn.innerText = "CONNECTING...";
+        authBtn.disabled = true;
+
+        try {
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+            } catch (loginErr) {
+                if (loginErr.code === 'auth/user-not-found' || loginErr.code === 'auth/invalid-credential') {
+                    await auth.createUserWithEmailAndPassword(email, pass);
+                } else { throw loginErr; }
+            }
+        } catch (error) {
+            alert("Auth Error: " + error.message);
+        } finally { authBtn.disabled = false; }
     }
 
-    window.onload = () => { setLang(localStorage.getItem('selectedLang') || 'en'); };
+    function showDashboard(user) {
+        document.getElementById('auth-title').innerText = "MY CABINET";
+        document.getElementById('auth-sub').innerText = "Logged in: " + user.email;
+        document.getElementById('auth-form-fields').innerHTML = `
+            <div style="background: rgba(163, 73, 245, 0.1); padding: 20px; border-radius: 15px; border: 1px solid var(--accent); text-align: left; margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 10px; color: #888;">UID:</p>
+                <p style="margin: 5px 0 15px 0; font-family: monospace; font-size: 11px; color: #fff; word-break: break-all;">${user.uid}</p>
+                <p style="margin: 0; font-size: 10px; color: #888;">STATUS:</p>
+                <p style="margin: 5px 0 0 0; color: #00ff88; font-weight: bold;">ACTIVE ✅</p>
+            </div>
+        `;
+        const btn = document.getElementById('auth-btn');
+        btn.innerText = "LOGOUT";
+        btn.style.background = "linear-gradient(45deg, #ff4444, #990000)"; 
+        btn.onclick = async () => { await auth.signOut(); location.reload(); };
+    }
+
+    function resetToLogin() {
+        const fields = document.getElementById('auth-form-fields');
+        if (fields) {
+            fields.innerHTML = `<input type="email" id="uEmail" class="auth-input" placeholder="Email Address">
+                                <input type="password" id="uPass" class="auth-input" placeholder="Password (min. 6 chars)">`;
+        }
+        const btn = document.getElementById('auth-btn');
+        if (btn) {
+            btn.innerText = translations[localStorage.getItem('selectedLang') || 'en'].authBtn;
+            btn.style.background = "";
+            btn.onclick = handleAuth;
+        }
+    }
+
+    function openAuth() {
+        const modal = document.getElementById('authModal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
+
+    function closeAuth() {
+        const modal = document.getElementById('authModal');
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 500);
+    }
+
+    function openPayment() { 
+        if (!auth.currentUser) openAuth(); 
+        else {
+            const pModal = document.getElementById('paymentModal');
+            pModal.style.display = 'flex';
+            setTimeout(() => pModal.classList.add('active'), 10);
+        }
+    }
+
+    function closeModal() { 
+        const pModal = document.getElementById('paymentModal');
+        pModal.classList.remove('active');
+        setTimeout(() => pModal.style.display = 'none', 500);
+    }
 
     function selectPlan(element, price) {
         document.querySelectorAll('.plan-item').forEach(item => item.classList.remove('selected'));
@@ -499,95 +550,71 @@
         document.getElementById('finalPriceText').innerText = "$" + price;
     }
 
-    function openPayment() { 
-        if (!isLoggedIn) openAuth(); 
-        else document.getElementById('paymentModal').style.display = 'flex'; 
-    }
-
-    function closeModal() { document.getElementById('paymentModal').style.display = 'none'; }
-    function openAuth() { document.getElementById('authModal').style.display = 'flex'; }
-    
-    function closeAuth() { 
-        document.getElementById('authModal').style.display = 'none'; 
-        isVerifying = false;
-        document.getElementById('auth-form-fields').style.display = 'block';
-        document.getElementById('verify-section').style.display = 'none';
-        setLang(localStorage.getItem('selectedLang') || 'en');
-    }
-
-    async function handleAuth() {
-        const lang = localStorage.getItem('selectedLang') || 'en';
-        const email = document.getElementById('uEmail').value.trim();
-        const pass = document.getElementById('uPass').value;
-        const inputCode = document.getElementById('uCode').value.trim();
-        const authBtn = document.getElementById('auth-btn');
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!isVerifying) {
-            if (emailRegex.test(email) && pass.length >= 6) {
-                authBtn.innerText = "...";
-                authBtn.disabled = true;
-                generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-                // Параметры для шаблона (проверьте переменные в EmailJS!)
-                const templateParams = {
-                    to_email: email,
-                    code: generatedCode
-                };
-
-                console.log("Attempting to send OTP to:", email);
-
-                emailjs.send(SERVICE_ID, OTP_TEMPLATE_ID, templateParams)
-                    .then(() => {
-                        isVerifying = true;
-                        document.getElementById('auth-form-fields').style.display = 'none';
-                        document.getElementById('verify-section').style.display = 'block';
-                        authBtn.innerText = translations[lang].auth_verify;
-                        authBtn.disabled = false;
-                    })
-                    .catch((err) => {
-                        console.error("EmailJS Full Error Object:", err);
-                        alert(`Error: ${err.text || 'Check console for details'}`);
-                        authBtn.disabled = false;
-                        authBtn.innerText = translations[lang].auth_btn;
-                    });
-            } else {
-                alert(translations[lang].alert_error_fields);
-            }
-        } else {
-            if(inputCode === generatedCode) {
-                isLoggedIn = true;
-                alert(translations[lang].alert_welcome + email + translations[lang].alert_now); 
-                closeAuth();
-                openPayment();
-            } else {
-                alert(translations[lang].alert_invalid_code);
-            }
+    // --- ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА ---
+    function setLang(lang, btn) {
+        if (btn) {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
+        localStorage.setItem('selectedLang', lang);
+        
+        const t = translations[lang];
+        
+        // Навигация
+        document.getElementById('nav-acc').innerText = t.navAcc;
+        document.getElementById('nav-dl').innerText = t.navDl;
+        
+        // Главная карточка
+        document.getElementById('status-badge').innerText = t.status;
+        document.getElementById('prod-title').innerText = t.prodTitle;
+        document.getElementById('prod-desc').innerText = t.prodDesc;
+        document.getElementById('buy-btn').innerText = t.buyBtn;
+
+        // Планы
+        document.getElementById('p1-name').innerText = t.plans[0];
+        document.getElementById('p2-name').innerText = t.plans[1];
+        document.getElementById('p3-name').innerText = t.plans[2];
+        document.getElementById('p4-name').innerText = t.plans[3];
+        document.getElementById('p5-name').innerText = t.plans[4];
+
+        // Фичи
+        const tEls = document.querySelectorAll('.feat-t');
+        const dEls = document.querySelectorAll('.feat-d');
+        tEls.forEach((el, i) => el.innerText = t.featT[i]);
+        dEls.forEach((el, i) => el.innerText = t.featD[i]);
+
+        // Модалки
+        document.getElementById('auth-title').innerText = t.authTitle;
+        if(!auth.currentUser) document.getElementById('auth-sub').innerText = t.authSub;
+        if(!auth.currentUser) document.getElementById('auth-btn').innerText = t.authBtn;
+        
+        document.getElementById('pay-title').innerText = t.payTitle;
+        document.getElementById('pay-crypto-btn').innerText = t.payCrypto;
+        document.getElementById('pay-cancel').innerText = t.payCancel;
     }
 
     function sendOrderConfirmation() {
-        const email = document.getElementById('uEmail').value.trim();
-        const planName = document.querySelector('.plan-item.selected .plan-name').innerText;
+        if (!auth.currentUser) return;
         emailjs.send(SERVICE_ID, ORDER_TEMPLATE_ID, {
-            to_email: email,
-            plan_name: planName,
+            to_email: auth.currentUser.email,
+            plan_name: document.querySelector('.plan-item.selected .plan-name').innerText,
             price: currentPrice + " USDT"
         });
     }
 
     window.onclick = function(e) {
-        if (e.target == document.getElementById('paymentModal')) closeModal();
-        if (e.target == document.getElementById('authModal')) closeAuth();
+        if (e.target.classList.contains('auth-modal')) {
+            closeModal();
+            closeAuth();
+        }
     }
 
-    document.addEventListener('mousemove', (e) => {
-        const moveX = (e.clientX - window.innerWidth / 2) * 0.015;
-        const moveY = (e.clientY - window.innerHeight / 2) * 0.015;
-        const bg = document.querySelector('.sea-background');
-        if (bg) bg.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
-    });
+    // Авто-загрузка языка
+    window.onload = () => {
+        const savedLang = localStorage.getItem('selectedLang') || 'en';
+        const btnId = savedLang === 'ru' ? 'btn-ru' : 'btn-en';
+        setLang(savedLang, document.getElementById(btnId));
+    };
 </script>
 
 </body>
