@@ -22,6 +22,7 @@
             --card-bg: rgba(15, 18, 24, 0.8);
             --text: #ffffff;
             --secondary: #8a8d91;
+            --success: #00ff88;
         }
 
         body {
@@ -167,7 +168,7 @@
 
         .status-badge {
             font-size: 0.75rem;
-            color: #00ff88;
+            color: var(--success);
             background: rgba(0, 255, 136, 0.1);
             padding: 8px 18px;
             border-radius: 50px;
@@ -175,6 +176,34 @@
             display: inline-block;
             margin-bottom: 25px;
             border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .sale-badge {
+            position: absolute;
+            top: 0; right: 0;
+            background: var(--success);
+            color: #000;
+            font-size: 0.55rem;
+            padding: 3px 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-bottom-left-radius: 12px;
+            box-shadow: -2px 2px 10px rgba(0, 255, 136, 0.3);
+            animation: pulseSale 2s infinite;
+        }
+
+        @keyframes pulseSale {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.8rem;
+            margin-right: 8px;
+            font-weight: 400;
         }
 
         .plan-item {
@@ -188,11 +217,15 @@
             cursor: pointer;
             transition: 0.3s;
             margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
         }
 
         .plan-item:hover { background: rgba(163, 73, 245, 0.05); }
         .plan-item.selected { border-color: var(--accent); background: rgba(163, 73, 245, 0.15); }
+        .plan-item.sale-active { border-color: var(--success); }
         .plan-price { color: var(--accent); font-weight: 800; }
+        .plan-price.free { color: var(--success); }
 
         .buy-btn {
             width: 100%;
@@ -213,10 +246,6 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(163, 73, 245, 0.3);
             filter: brightness(1.1);
-        }
-
-        .buy-btn:active {
-            transform: scale(0.97);
         }
 
         .auth-modal {
@@ -271,8 +300,6 @@
             transition: 0.3s;
         }
 
-        .auth-input:focus { border-color: var(--accent); background: rgba(163, 73, 245, 0.05); }
-
         .features-grid {
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
@@ -292,9 +319,16 @@
             transition: 0.3s;
         }
 
-        .feature-item:hover {
-            border-color: var(--accent);
-            background: rgba(163, 73, 245, 0.05);
+        .sol-address-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed var(--accent);
+            padding: 15px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+            margin: 15px 0;
+            color: var(--secondary);
         }
 
         @media (max-width: 900px) {
@@ -333,8 +367,12 @@
             <p id="prod-desc" style="color: var(--secondary); margin-bottom: 30px;">Premium security & performance solution.</p>
 
             <div class="plan-list">
-                <div class="plan-item selected" onclick="selectPlan(this, '0.29')">
-                    <span class="plan-name" id="p1-name">1 Day Access</span> <span class="plan-price">$0.29</span>
+                <div class="plan-item selected sale-active" onclick="selectPlan(this, '0.00')">
+                    <div class="sale-badge" id="sale-badge">SALE: 1 DAY FREE</div>
+                    <span class="plan-name" id="p1-name">1 Day Trial</span> 
+                    <span class="plan-price free">
+                        <span class="old-price">$0.29</span>$0.00
+                    </span>
                 </div>
                 <div class="plan-item" onclick="selectPlan(this, '0.50')">
                     <span class="plan-name" id="p2-name">3 Days Access</span> <span class="plan-price">$0.50</span>
@@ -356,18 +394,18 @@
         <div class="features-grid">
             <div class="feature-item">
                 <div style="font-size: 1.8rem; margin-bottom: 12px;">🛡️</div>
-                <h4 class="feat-t" style="margin: 0; font-size: 0.8rem; letter-spacing: 2px;">BYPASS</h4>
-                <p class="feat-d" style="color: var(--secondary); font-size: 0.75rem;">Kernel-level protection.</p>
+                <h4 class="feat-t">BYPASS</h4>
+                <p class="feat-d">Kernel-level protection.</p>
             </div>
             <div class="feature-item">
                 <div style="font-size: 1.8rem; margin-bottom: 12px;">🚀</div>
-                <h4 class="feat-t" style="margin: 0; font-size: 0.8rem; letter-spacing: 2px;">OPTIMIZED</h4>
-                <p class="feat-d" style="color: var(--secondary); font-size: 0.75rem;">Zero FPS impact.</p>
+                <h4 class="feat-t">OPTIMIZED</h4>
+                <p class="feat-d">Zero FPS impact.</p>
             </div>
             <div class="feature-item">
                 <div style="font-size: 1.8rem; margin-bottom: 12px;">💎</div>
-                <h4 class="feat-t" style="margin: 0; font-size: 0.8rem; letter-spacing: 2px;">STREAM PROOF</h4>
-                <p class="feat-d" style="color: var(--secondary); font-size: 0.75rem;">Hidden on OBS/Discord.</p>
+                <h4 class="feat-t">STREAM PROOF</h4>
+                <p class="feat-d">Hidden on OBS/Discord.</p>
             </div>
         </div>
     </div>
@@ -376,8 +414,15 @@
 <div id="paymentModal" class="auth-modal">
     <div class="auth-content">
         <h2 id="pay-title">Checkout</h2>
-        <div id="finalPriceText" style="font-size: 2rem; color: var(--accent); margin: 20px 0;">$0.29</div>
-        <a href="https://yourstore.sellix.io/" target="_blank" class="buy-btn" id="pay-crypto-btn" style="text-decoration:none; display:block;" onclick="sendOrderConfirmation()">Pay with Crypto</a>
+        <div id="finalPriceText" style="font-size: 2rem; color: var(--success); margin: 20px 0;">$0.00</div>
+        
+        <p id="pay-instr" style="font-size: 0.8rem; color: var(--secondary);">Send SOL or USDT (Solana) to:</p>
+        <div class="sol-address-box" id="sol-address">2iiYrWeU137CAkrS1cPK73tJgpNdptCUgUh9iYMnVpJU</div>
+        
+        <button class="buy-btn" id="copy-sol-btn" style="padding: 12px; font-size: 0.8rem; margin-bottom: 10px;" onclick="copyAddress()">Copy Address</button>
+        
+        <button class="buy-btn" id="pay-confirm-btn" style="background: var(--success); color: #000;" onclick="sendOrderConfirmation()">I have sent the payment</button>
+        
         <button onclick="closeModal()" id="pay-cancel" style="background:none; border:none; color:gray; cursor:pointer; margin-top:15px;">Cancel</button>
     </div>
 </div>
@@ -398,41 +443,26 @@
 </div>
 
 <script>
-    // --- ПЕРЕВОДЫ ---
     const translations = {
         en: {
-            navAcc: "account",
-            navDl: "download external",
-            status: "● UNDETECTED",
-            prodTitle: "Celestial Tool",
-            prodDesc: "Premium security & performance solution.",
-            plans: ["1 Day Access", "3 Days Access", "7 Days Access", "30 Days Access", "Lifetime Access"],
-            buyBtn: "Purchase Now",
+            navAcc: "account", navDl: "download external", status: "● UNDETECTED",
+            prodTitle: "Celestial Tool", prodDesc: "Premium security & performance solution.",
+            plans: ["1 Day Trial", "3 Days Access", "7 Days Access", "30 Days Access", "Lifetime Access"],
+            saleBadge: "SALE: 1 DAY FREE", buyBtn: "Purchase Now",
             featT: ["BYPASS", "OPTIMIZED", "STREAM PROOF"],
             featD: ["Kernel-level protection.", "Zero FPS impact.", "Hidden on OBS/Discord."],
-            authTitle: "Account",
-            authSub: "Login to access your cabinet.",
-            authBtn: "Login / Create Profile",
-            payTitle: "Checkout",
-            payCrypto: "Pay with Crypto",
-            payCancel: "Cancel"
+            authTitle: "Account", authSub: "Login to access your cabinet.", authBtn: "Login / Create Profile",
+            payTitle: "Checkout", payConfirm: "I have sent the payment", payCancel: "Cancel", payInstr: "Send SOL or USDT (Solana) to:", copyBtn: "Copy Address"
         },
         ru: {
-            navAcc: "аккаунт",
-            navDl: "скачать софт",
-            status: "● НЕ ОБНАРУЖЕНО",
-            prodTitle: "Celestial Tool",
-            prodDesc: "Премиальное решение для защиты и производительности.",
-            plans: ["Доступ на 1 день", "Доступ на 3 дня", "Доступ на 7 дней", "Доступ на 30 дней", "Навсегда"],
-            buyBtn: "Купить сейчас",
+            navAcc: "аккаунт", navDl: "скачать софт", status: "● НЕ ОБНАРУЖЕНО",
+            prodTitle: "Celestial Tool", prodDesc: "Премиальное решение для защиты и производительности.",
+            plans: ["Пробный период", "Доступ на 3 дня", "Доступ на 7 дней", "Доступ на 30 дней", "Навсегда"],
+            saleBadge: "АКЦИЯ: 1 ДЕНЬ БЕСПЛАТНО", buyBtn: "Купить сейчас",
             featT: ["ОБХОД", "ОПТИМИЗАЦИЯ", "INVISIBLE"],
             featD: ["Защита на уровне ядра.", "Ноль влияния на FPS.", "Скрыт в OBS/Discord."],
-            authTitle: "Аккаунт",
-            authSub: "Войдите, чтобы войти в кабинет.",
-            authBtn: "Войти / Создать профиль",
-            payTitle: "Оплата",
-            payCrypto: "Оплатить Криптой",
-            payCancel: "Отмена"
+            authTitle: "Аккаунт", authSub: "Войдите, чтобы войти в кабинет.", authBtn: "Войти / Создать профиль",
+            payTitle: "Оплата", payConfirm: "Я оплатил", payCancel: "Отмена", payInstr: "Отправьте SOL или USDT (Solana) на:", copyBtn: "Копировать адрес"
         }
     };
 
@@ -452,7 +482,7 @@
     const SERVICE_ID = "service_f5n6cj9";
     const ORDER_TEMPLATE_ID = "template_xjbc33m";
 
-    let currentPrice = "0.29";
+    let currentPrice = "0.00";
 
     auth.onAuthStateChanged((user) => {
         if (user) showDashboard(user);
@@ -463,26 +493,18 @@
         const email = document.getElementById('uEmail').value.trim();
         const pass = document.getElementById('uPass').value;
         const authBtn = document.getElementById('auth-btn');
-
-        if (!email || pass.length < 6) {
-            alert("Enter valid email and password (min 6 chars)");
-            return;
-        }
-
+        if (!email || pass.length < 6) { alert("Enter valid email and password"); return; }
         authBtn.innerText = "CONNECTING...";
         authBtn.disabled = true;
-
         try {
-            try {
-                await auth.signInWithEmailAndPassword(email, pass);
-            } catch (loginErr) {
+            try { await auth.signInWithEmailAndPassword(email, pass); } 
+            catch (loginErr) {
                 if (loginErr.code === 'auth/user-not-found' || loginErr.code === 'auth/invalid-credential') {
                     await auth.createUserWithEmailAndPassword(email, pass);
                 } else { throw loginErr; }
             }
-        } catch (error) {
-            alert("Auth Error: " + error.message);
-        } finally { authBtn.disabled = false; }
+        } catch (error) { alert("Auth Error: " + error.message); } 
+        finally { authBtn.disabled = false; }
     }
 
     function showDashboard(user) {
@@ -504,15 +526,11 @@
 
     function resetToLogin() {
         const fields = document.getElementById('auth-form-fields');
-        if (fields) {
-            fields.innerHTML = `<input type="email" id="uEmail" class="auth-input" placeholder="Email Address">
-                                <input type="password" id="uPass" class="auth-input" placeholder="Password (min. 6 chars)">`;
-        }
+        if (fields) fields.innerHTML = `<input type="email" id="uEmail" class="auth-input" placeholder="Email Address"><input type="password" id="uPass" class="auth-input" placeholder="Password (min. 6 chars)">`;
         const btn = document.getElementById('auth-btn');
         if (btn) {
             btn.innerText = translations[localStorage.getItem('selectedLang') || 'en'].authBtn;
-            btn.style.background = "";
-            btn.onclick = handleAuth;
+            btn.style.background = ""; btn.onclick = handleAuth;
         }
     }
 
@@ -529,9 +547,11 @@
     }
 
     function openPayment() { 
-        if (!auth.currentUser) openAuth(); 
-        else {
+        if (!auth.currentUser) {
+            openAuth(); 
+        } else {
             const pModal = document.getElementById('paymentModal');
+            document.getElementById('finalPriceText').innerText = "$" + currentPrice;
             pModal.style.display = 'flex';
             setTimeout(() => pModal.classList.add('active'), 10);
         }
@@ -543,77 +563,86 @@
         setTimeout(() => pModal.style.display = 'none', 500);
     }
 
-    function selectPlan(element, price) {
-        document.querySelectorAll('.plan-item').forEach(item => item.classList.remove('selected'));
-        element.classList.add('selected');
-        currentPrice = price;
-        document.getElementById('finalPriceText').innerText = "$" + price;
+    function copyAddress() {
+        const addr = document.getElementById('sol-address').innerText;
+        navigator.clipboard.writeText(addr);
+        const btn = document.getElementById('copy-sol-btn');
+        const originalText = btn.innerText;
+        btn.innerText = "COPIED!";
+        setTimeout(() => btn.innerText = originalText, 2000);
     }
 
-    // --- ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЯЗЫКА ---
+    function selectPlan(element, price) {
+        document.querySelectorAll('.plan-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        element.classList.add('selected');
+        currentPrice = price;
+    }
+
     function setLang(lang, btn) {
         if (btn) {
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
         localStorage.setItem('selectedLang', lang);
-        
         const t = translations[lang];
         
-        // Навигация
         document.getElementById('nav-acc').innerText = t.navAcc;
         document.getElementById('nav-dl').innerText = t.navDl;
-        
-        // Главная карточка
         document.getElementById('status-badge').innerText = t.status;
         document.getElementById('prod-title').innerText = t.prodTitle;
         document.getElementById('prod-desc').innerText = t.prodDesc;
         document.getElementById('buy-btn').innerText = t.buyBtn;
+        document.getElementById('sale-badge').innerText = t.saleBadge;
 
-        // Планы
-        document.getElementById('p1-name').innerText = t.plans[0];
-        document.getElementById('p2-name').innerText = t.plans[1];
-        document.getElementById('p3-name').innerText = t.plans[2];
-        document.getElementById('p4-name').innerText = t.plans[3];
-        document.getElementById('p5-name').innerText = t.plans[4];
+        for(let i=1; i<=5; i++) { document.getElementById(`p${i}-name`).innerText = t.plans[i-1]; }
 
-        // Фичи
         const tEls = document.querySelectorAll('.feat-t');
         const dEls = document.querySelectorAll('.feat-d');
         tEls.forEach((el, i) => el.innerText = t.featT[i]);
         dEls.forEach((el, i) => el.innerText = t.featD[i]);
 
-        // Модалки
         document.getElementById('auth-title').innerText = t.authTitle;
-        if(!auth.currentUser) document.getElementById('auth-sub').innerText = t.authSub;
-        if(!auth.currentUser) document.getElementById('auth-btn').innerText = t.authBtn;
+        if(!auth.currentUser) {
+            document.getElementById('auth-sub').innerText = t.authSub;
+            document.getElementById('auth-btn').innerText = t.authBtn;
+        }
         
         document.getElementById('pay-title').innerText = t.payTitle;
-        document.getElementById('pay-crypto-btn').innerText = t.payCrypto;
+        document.getElementById('pay-confirm-btn').innerText = t.payConfirm;
         document.getElementById('pay-cancel').innerText = t.payCancel;
+        document.getElementById('pay-instr').innerText = t.payInstr;
+        document.getElementById('copy-sol-btn').innerText = t.copyBtn;
     }
 
     function sendOrderConfirmation() {
         if (!auth.currentUser) return;
+        const btn = document.getElementById('pay-confirm-btn');
+        btn.innerText = "SENDING...";
+        btn.disabled = true;
+
         emailjs.send(SERVICE_ID, ORDER_TEMPLATE_ID, {
-            to_email: auth.currentUser.email,
+            user_email: auth.currentUser.email,
             plan_name: document.querySelector('.plan-item.selected .plan-name').innerText,
-            price: currentPrice + " USDT"
+            price: currentPrice + " SOL/USDT",
+            wallet: "2iiYrWeU137CAkrS1cPK73tJgpNdptCUgUh9iYMnVpJU"
+        }).then(() => {
+            alert("Request sent! We will verify the transaction and activate your account soon.");
+            closeModal();
+        }).finally(() => {
+            btn.disabled = false;
+            btn.innerText = translations[localStorage.getItem('selectedLang') || 'en'].payConfirm;
         });
     }
 
     window.onclick = function(e) {
-        if (e.target.classList.contains('auth-modal')) {
-            closeModal();
-            closeAuth();
-        }
+        if (e.target.classList.contains('auth-modal')) { closeModal(); closeAuth(); }
     }
 
-    // Авто-загрузка языка
     window.onload = () => {
         const savedLang = localStorage.getItem('selectedLang') || 'en';
-        const btnId = savedLang === 'ru' ? 'btn-ru' : 'btn-en';
-        setLang(savedLang, document.getElementById(btnId));
+        setLang(savedLang, document.getElementById(savedLang === 'ru' ? 'btn-ru' : 'btn-en'));
     };
 </script>
 
